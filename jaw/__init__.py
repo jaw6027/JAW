@@ -1,0 +1,1 @@
+"""JAW starter application."""
