@@ -1,0 +1,45 @@
+services:
+  web:
+    build: .
+    image: petal-polish:local
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      DJANGO_DEBUG: "0"
+    volumes:
+      - studio_data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    restart: unless-stopped
+  worker:
+    image: petal-polish:local
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      DJANGO_DEBUG: "0"
+    volumes:
+      - studio_data:/data
+    command: ["sh", "scripts/worker.sh"]
+    depends_on:
+      web:
+        condition: service_started
+    restart: unless-stopped
+  https:
+    image: caddy:2-alpine
+    profiles: ["public"]
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+    restart: unless-stopped
+volumes:
+  studio_data:
+  caddy_data:
+  caddy_config:

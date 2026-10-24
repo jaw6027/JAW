@@ -22,3 +22,11 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Persistent application data and collected assets
+data/
+staticfiles/
+*.sqlite3
+*.sqlite3-*
+playwright-report/
+test-results/
